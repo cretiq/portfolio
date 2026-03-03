@@ -84,7 +84,29 @@ export function Bookshelf({
                     <BackgroundGradientAnimation
                       containerClassName="absolute inset-0"
                       interactive={isExpanded}
-                    />
+                      {...project.animatedCoverColors}
+                    >
+                      {project.id === "nextcareer" && (
+                        <div className="absolute inset-0 pointer-events-none">
+                          {/* Floating card 1 */}
+                          <div
+                            className="absolute top-[18%] right-[22%] w-16 h-10 rounded-lg border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm flex flex-col justify-center gap-1 px-2"
+                            style={{ animation: "floatCard1 6s ease-in-out infinite" }}
+                          >
+                            <div className="h-[2px] w-8 rounded-full bg-white/10" />
+                            <div className="h-[2px] w-5 rounded-full bg-white/[0.07]" />
+                          </div>
+                          {/* Floating card 2 */}
+                          <div
+                            className="absolute top-[34%] right-[32%] w-12 h-8 rounded-lg border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm flex flex-col justify-center gap-1 px-1.5"
+                            style={{ animation: "floatCard2 8s ease-in-out infinite" }}
+                          >
+                            <div className="h-[2px] w-6 rounded-full bg-white/10" />
+                            <div className="h-[2px] w-4 rounded-full bg-white/[0.07]" />
+                          </div>
+                        </div>
+                      )}
+                    </BackgroundGradientAnimation>
                   ) : project.previewImage ? (
                     <Image
                       src={project.previewImage}

@@ -108,8 +108,18 @@
   100% { transform: translateY(-50%); }
 }
 
+@keyframes floatCard1 {
+  0%, 100% { transform: translateY(0) rotate(3deg); }
+  50% { transform: translateY(-12px) rotate(5deg); }
+}
+@keyframes floatCard2 {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50% { transform: translateY(8px) rotate(-3deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .gradient-bg-animate * { animation: none !important; }
+  [style*="floatCard"] { animation: none !important; }
 }
 
 /* Aurora background animation */

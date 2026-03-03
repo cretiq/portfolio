@@ -8,6 +8,16 @@ export type Project = {
   coverPosition?: string
   color?: string
   animatedCover?: boolean
+  animatedCoverColors?: {
+    gradientBackgroundStart?: string
+    gradientBackgroundEnd?: string
+    firstColor?: string
+    secondColor?: string
+    thirdColor?: string
+    fourthColor?: string
+    fifthColor?: string
+    pointerColor?: string
+  }
   transitMapCover?: boolean
   previewVideo?: string
   languages: string[]
