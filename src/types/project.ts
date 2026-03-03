@@ -1,9 +1,14 @@
 export type Project = {
   id: string
   title: string
+  subtitle?: string
+  year?: string
   summary: string
   previewImage?: string
+  coverPosition?: string
   color?: string
+  animatedCover?: boolean
+  transitMapCover?: boolean
   previewVideo?: string
   languages: string[]
   linesOfCode?: string

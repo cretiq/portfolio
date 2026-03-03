@@ -1,12 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "motion/react"
+import Image from "next/image"
 import { ExternalLink, Github, ImageIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Project } from "@/types/project"
 import { MediaViewer } from "./media-viewer"
+import { BackgroundGradientAnimation } from "@/components/ui/background-gradient-animation"
+import dynamic from "next/dynamic"
+
+const LiveTransitMap = dynamic(
+  () => import("@/components/ui/live-transit-map").then((m) => m.LiveTransitMap),
+  { ssr: false }
+)
 
 export function Bookshelf({
   projects,
@@ -17,6 +25,20 @@ export function Bookshelf({
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(projects[0]?.id ?? null)
   const [mediaProject, setMediaProject] = useState<Project | null>(null)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return
+      const idx = projects.findIndex((p) => p.id === expandedId)
+      if (e.key === "ArrowRight" && idx < projects.length - 1) {
+        setExpandedId(projects[idx + 1].id)
+      } else if (e.key === "ArrowLeft" && idx > 0) {
+        setExpandedId(projects[idx - 1].id)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [expandedId, projects])
 
   return (
     <>
@@ -37,21 +59,45 @@ export function Bookshelf({
                 onMouseEnter={() => setExpandedId(project.id)}
               >
                 {/* Vertical spine — dark back of book */}
-                <div className="relative z-10 flex w-14 shrink-0 items-end justify-center bg-black pb-3">
+                <div className="relative z-10 flex w-14 shrink-0 flex-col items-center justify-between bg-black py-3">
+                  {project.year && (
+                    <span className={`whitespace-nowrap text-base tracking-wider [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 ${isExpanded ? "text-white/40" : "text-white/10"}`}>
+                      {project.year}
+                    </span>
+                  )}
                   <span className={`whitespace-nowrap text-3xl font-semibold [writing-mode:vertical-rl] rotate-180 transition-colors duration-300 ${isExpanded ? "text-white" : "text-white/10"}`}>
-                    {project.title}
+                    {project.title}{project.subtitle && ` — ${project.subtitle}`}
                   </span>
                 </div>
 
                 {/* Color area — only visible when expanded */}
                 <motion.div
-                  className="relative m-3 ml-0 min-w-0 overflow-hidden rounded-2xl"
+                  className="relative m-3 ml-0 min-w-0 overflow-hidden rounded-4xl"
                   style={{ backgroundColor: project.color ?? "#333" }}
                   animate={{ flexGrow: isExpanded ? 1 : 0, flexBasis: 0 }}
                   transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
                 >
+                  {/* Cover */}
+                  {project.transitMapCover ? (
+                    <LiveTransitMap />
+                  ) : project.animatedCover ? (
+                    <BackgroundGradientAnimation
+                      containerClassName="absolute inset-0"
+                      interactive={isExpanded}
+                    />
+                  ) : project.previewImage ? (
+                    <Image
+                      src={project.previewImage}
+                      alt={project.title}
+                      fill
+                      className={`object-cover ${project.coverPosition ?? "object-top"}`}
+                      sizes="(max-width: 768px) 100vw, 100vw"
+                      quality={90}
+                    />
+                  ) : null}
+
                   {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                  <div className="absolute inset-0 rounded-4xl bg-gradient-to-t from-black/80 via-transparent to-transparent" />
 
                   {/* Expanded: full content */}
                   <AnimatePresence>
@@ -64,7 +110,6 @@ export function Bookshelf({
                         className="relative z-10 flex h-full flex-col justify-end p-6"
                       >
                         <div className="flex flex-col gap-3">
-                          <h3 className="text-3xl font-bold text-white">{project.title}</h3>
                           <p className="max-w-md text-sm text-white/70">{project.summary}</p>
 
                           <div className="flex flex-wrap items-center gap-1.5">
